@@ -15,9 +15,15 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -66,16 +72,19 @@ fun ProfileHeader() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 16.dp),
+            .padding(bottom = 16.dp)
+            .background(color = Color.LightGray),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Placeholder for profile picture
         Image(
             painter = painterResource(id = R.drawable.profile_picture),
             contentDescription = "Profile Picture",
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(100.dp)
                 .background(color = Color.Gray, shape = CircleShape)
+                .clip(shape = CircleShape)
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = "Roberto Nájera", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
@@ -93,7 +102,11 @@ fun ProfileOptions() {
 
     Column {
         options.forEach { option ->
-            ProfileOptionItem(option)
+            if (option.title == "Notifications") {
+                NotificationOptionItem(option)
+            } else {
+                ProfileOptionItem(option)
+            }
             HorizontalDivider(color = Color.Gray.copy(alpha = 0.5f))
         }
     }
@@ -114,6 +127,30 @@ fun ProfileOptionItem(option: ProfileOption) {
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(text = option.title, style = MaterialTheme.typography.bodyLarge)
+    }
+}
+
+@Composable
+fun NotificationOptionItem(option: ProfileOption) {
+    var isChecked by remember { mutableStateOf(true) }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = option.icon,
+            contentDescription = option.title,
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(text = option.title, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+        Switch(
+            checked = isChecked,
+            onCheckedChange = { isChecked = it }
+        )
     }
 }
 

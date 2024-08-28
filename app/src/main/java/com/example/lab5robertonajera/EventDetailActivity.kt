@@ -4,10 +4,18 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -36,7 +44,7 @@ fun EventDetailScreen() {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Event Details") },
+                title = { Text(text = "Detalles del Evento") },
             )
         },
         content = { padding ->
@@ -47,6 +55,19 @@ fun EventDetailScreen() {
                     .fillMaxSize()
             ) {
                 EventDetailContent()
+            }
+        },
+        bottomBar = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button(onClick = {  }) {
+                    Text(text = "Favorite")
+                }
+                Button(onClick = {  }) {
+                    Text(text = "Buy")
+                }
             }
         }
     )
@@ -67,7 +88,7 @@ fun EventDetailContent() {
             .padding(bottom = 16.dp)
     )
 
-    Text(text = "Event Name", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
+    Text(text = "Título", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
 
     Spacer(modifier = Modifier.height(8.dp))
 
@@ -75,8 +96,8 @@ fun EventDetailContent() {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = "Location", style = MaterialTheme.typography.bodyMedium)
-        Text(text = "Date", style = MaterialTheme.typography.bodyMedium)
+        DateWithIcon()
+        Text(text = "Hora", style = MaterialTheme.typography.bodyMedium)
     }
 
     Spacer(modifier = Modifier.height(16.dp))
@@ -92,16 +113,22 @@ fun EventDetailContent() {
 
     Spacer(modifier = Modifier.height(24.dp))
 
+}
+@Composable
+fun DateWithIcon() {
+
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .padding(8.dp)
+            .clickable {  }
     ) {
-        Button(onClick = {  }) {
-            Text(text = "Favorite")
-        }
-        Button(onClick = {  }) {
-            Text(text = "Buy")
-        }
+        Icon(
+            imageVector = Icons.Default.DateRange,
+            contentDescription = "Calendar Icon"
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text = "Fecha", style = MaterialTheme.typography.bodyMedium)
     }
 }
 
