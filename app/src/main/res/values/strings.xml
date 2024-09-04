@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Lab5RobertoNajera</string>
+    <string name="title_activity_concert_info">ConcertInfoActivity</string>
+    <string name="title_activity_places_list">PlacesListActivity</string>
+    <string name="title_activity_event_detail">EventDetailActivity</string>
+    <string name="title_activity_profile">ProfileActivity</string>
+</resources>
