@@ -18,15 +18,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 
 class PlacesListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             TodoEventoTheme {
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    PlacesListScreen()
-                }
+                PlacesListScreen(rememberNavController())
             }
         }
     }
@@ -36,26 +36,28 @@ data class Place(val name: String, val location: String, val imageResId: Int)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlacesListScreen() {
+fun PlacesListScreen(navController: NavHostController) {
     val places = listOf(
         Place("LA Hall", "Guns and Roses Los Angeles", R.drawable.place_image1),
         Place("Denver Hall", "Guns and Roses Denver", R.drawable.place_image2),
         Place("Maddison Square Garden", "Guns and Roses New York", R.drawable.place_image3)
     )
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "Lugares") },
-            )
-        },
-        content = { padding ->
-            LazyColumn(contentPadding = padding) {
-                items(places) { place ->
-                    PlaceItem(place = place)
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(text = "Lugares") },
+                )
+            },
+            content = { padding ->
+                LazyColumn(contentPadding = padding) {
+                    items(places) { place ->
+                        PlaceItem(place = place)
+                    }
                 }
             }
-        }
-    )
+        )
+    }
 }
 
 @Composable
@@ -79,12 +81,7 @@ fun PlaceItem(place: Place) {
             }
         }
     }
+
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PlacesListScreenPreview() {
-    TodoEventoTheme {
-        PlacesListScreen()
-    }
-}
+

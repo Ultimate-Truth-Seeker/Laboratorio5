@@ -1,13 +1,14 @@
 package com.example.lab5robertonajera
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -18,11 +19,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.lab5robertonajera.ui.theme.TodoEventoTheme
 
 class EventDetailActivity : ComponentActivity() {
@@ -30,9 +33,7 @@ class EventDetailActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             TodoEventoTheme {
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    EventDetailScreen()
-                }
+                EventDetailScreen("", rememberNavController())
             }
         }
     }
@@ -40,46 +41,70 @@ class EventDetailActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventDetailScreen() {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "Detalles del Evento") },
-            )
-        },
-        content = { padding ->
-            Column(
-                modifier = Modifier
-                    .padding(padding)
-                    .padding(16.dp)
-                    .fillMaxSize()
-            ) {
-                EventDetailContent()
-            }
-        },
-        bottomBar = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Button(onClick = {  }) {
-                    Text(text = "Favorite")
+fun EventDetailScreen(eventId: String, navController: NavController) {
+    val concert = ConcertRepository.getConcertById(eventId)
+
+    val context = LocalContext.current
+    val sharedPreferences = context.getSharedPreferences("Favorites", Context.MODE_PRIVATE)
+
+    var isFavorite by remember { mutableStateOf(concert?.isFavorite ?: false) }
+
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(text = "Detalles del Evento") },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.navigateUp() }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        }
+                    }
+                )
+            },
+            content = { padding ->
+                Column(
+                    modifier = Modifier
+                        .padding(padding)
+                        .padding(16.dp)
+                        .fillMaxSize()
+                ) {
+                    EventDetailContent(concert)
                 }
-                Button(onClick = {  }) {
-                    Text(text = "Buy")
+            },
+            bottomBar = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Button(onClick = {
+                        isFavorite = !isFavorite
+                        val updatedConcert = concert?.copy(isFavorite = isFavorite)
+                        if (updatedConcert != null) {
+                            ConcertRepository.updateConcert(updatedConcert)
+                        } // Update the repository
+                        val editor = sharedPreferences.edit()
+                        editor.putBoolean(eventId, isFavorite).apply()
+                    }) {
+                        Text(text = if (isFavorite) "Remove Favorite" else "Favorite")
+                    }
+                    Button(onClick = { }) {
+                        Text(text = "Buy")
+                    }
                 }
             }
-        }
-    )
+        )
+    }
 }
 
 @Composable
-fun EventDetailContent() {
+fun EventDetailContent(concert: Concert?) {
     // Replace with your own image resource
-    val imageResource = R.drawable.event_image
+    val imageResource = concert?.imageRes;
 
-    Image(
-        painter = painterResource(id = imageResource),
+    imageResource?.let { painterResource(id = it) }?.let {
+        Image(
+        painter = it,
         contentDescription = "Event Image",
         contentScale = ContentScale.Crop,
         modifier = Modifier
@@ -87,8 +112,9 @@ fun EventDetailContent() {
             .height(200.dp)
             .padding(bottom = 16.dp)
     )
+    }
 
-    Text(text = "Título", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
+    concert?.title?.let { Text(text = it, style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)) }
 
     Spacer(modifier = Modifier.height(8.dp))
 
@@ -106,10 +132,12 @@ fun EventDetailContent() {
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    Text(
-        text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sit amet pellentes.",
-        style = MaterialTheme.typography.bodyMedium
-    )
+    if (concert != null) {
+        Text(
+            text =  concert.supportingText,
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
 
     Spacer(modifier = Modifier.height(24.dp))
 
@@ -132,10 +160,3 @@ fun DateWithIcon() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun EventDetailScreenPreview() {
-    TodoEventoTheme {
-        EventDetailScreen()
-    }
-}

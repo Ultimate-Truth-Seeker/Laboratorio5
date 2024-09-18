@@ -28,6 +28,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.lab5robertonajera.ui.theme.TodoEventoTheme
 
 class ProfileActivity : ComponentActivity() {
@@ -35,9 +37,7 @@ class ProfileActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             TodoEventoTheme {
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    ProfileScreen()
-                }
+                ProfileScreen(rememberNavController())
             }
         }
     }
@@ -45,26 +45,29 @@ class ProfileActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen() {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "My Profile") },
-            )
-        },
-        content = { padding ->
-            Column(
-                modifier = Modifier
-                    .padding(padding)
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                ProfileHeader()
-                Spacer(modifier = Modifier.height(16.dp))
-                ProfileOptions()
+fun ProfileScreen(navController: NavHostController) {
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(text = "My Profile") },
+                )
+            },
+            content = { padding ->
+                Column(
+                    modifier = Modifier
+                        .padding(padding)
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    ProfileHeader()
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ProfileOptions()
+                }
             }
-        }
-    )
+        )
+    }
 }
 
 @Composable
@@ -160,6 +163,6 @@ data class ProfileOption(val title: String, val icon: androidx.compose.ui.graphi
 @Composable
 fun ProfileScreenPreview() {
     TodoEventoTheme {
-        ProfileScreen()
+        ProfileScreen(rememberNavController())
     }
 }
