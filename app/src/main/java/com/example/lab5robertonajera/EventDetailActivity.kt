@@ -47,7 +47,7 @@ fun EventDetailScreen(eventId: String, navController: NavController) {
     val context = LocalContext.current
     val sharedPreferences = context.getSharedPreferences("Favorites", Context.MODE_PRIVATE)
 
-    var isFavorite by remember { mutableStateOf(concert?.isFavorite ?: false) }
+    var isFavorite by remember { mutableStateOf(sharedPreferences.getBoolean(eventId, false)) }
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
 
@@ -79,10 +79,6 @@ fun EventDetailScreen(eventId: String, navController: NavController) {
                 ) {
                     Button(onClick = {
                         isFavorite = !isFavorite
-                        val updatedConcert = concert?.copy(isFavorite = isFavorite)
-                        if (updatedConcert != null) {
-                            ConcertRepository.updateConcert(updatedConcert)
-                        } // Update the repository
                         val editor = sharedPreferences.edit()
                         editor.putBoolean(eventId, isFavorite).apply()
                     }) {

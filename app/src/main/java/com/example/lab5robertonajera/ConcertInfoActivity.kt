@@ -34,6 +34,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.lab5robertonajera.ui.theme.TodoEventoTheme
@@ -218,7 +220,6 @@ data class Concert(
     val supportingText: String,
     val imageRes: Int,
     val id: String,
-    val isFavorite: Boolean = false,
 )
 
 // Singleton de eventos para el programa
@@ -237,23 +238,18 @@ object ConcertRepository {
         return false
     }
     val concertList = mutableStateListOf(
-        Concert("Title 1 Showcase", "Supporting text", R.drawable.concert_image1, 1.toString(), isFavorite = favorite(1.toString())),
-        Concert("Title 2", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sit amet pellentes.", R.drawable.concert_image2, 2.toString(), isFavorite = favorite(2.toString())),
-        Concert("Title 3", "Supporting text", R.drawable.concert_image3, 3.toString(), isFavorite = favorite(3.toString())),
-        Concert("Title 4", "Supporting text", R.drawable.concert_image4, 4.toString(), isFavorite = favorite(4.toString()))
+        Concert("Title 1 Showcase", "Supporting text", R.drawable.concert_image1, 1.toString()),
+        Concert("Title 2", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sit amet pellentes.", R.drawable.concert_image2, 2.toString() ),
+        Concert("Title 3", "Supporting text", R.drawable.concert_image3, 3.toString()),
+        Concert("Title 4", "Supporting text", R.drawable.concert_image4, 4.toString())
     )
     fun getConcertById(id: String): Concert? {
         return concertList.find { it.id == id }
     }
     fun getFavoritesList(): List<Concert> {
-        return concertList.filter { it.isFavorite }
+        return concertList.filter { favorite(it.id) }
     }
-    fun updateConcert(updatedConcert: Concert) {
-        val index = concertList.indexOfFirst { it.id == updatedConcert.id }
-        if (index != -1) {
-            concertList[index] = updatedConcert
-        }
-    }
+
 }
 
 @Composable
